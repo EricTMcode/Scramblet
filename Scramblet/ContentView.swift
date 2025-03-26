@@ -17,10 +17,16 @@ struct ContentView: View {
     @State private var letters = [Letter]()
     @State private var currentWord = [Letter]()
 
+    @State private var currentProgress = 0.0
+    @State private var totalProgress = 1.0
+
     let columns = Array(repeating: GridItem(.flexible(minimum: 100, maximum: 150), spacing: 0), count: 3)
 
     var body: some View {
         VStack(spacing: 20) {
+            ProgressView("Level Progress", value: currentProgress, total: totalProgress)
+                .tint(currentProgress / totalProgress > 0.8 ? .green : nil)
+
             LazyVGrid(columns: columns) {
                 ForEach(spellableWords, id: \.self) { word in
                     Text(
@@ -74,6 +80,9 @@ struct ContentView: View {
                     .disabled(currentWord.count < 3)
 
             }
+
+            Button("Next Level", action: load)
+                .disabled(currentProgress / totalProgress < 0.1)
         }
         .padding()
         .onAppear(perform: load)
@@ -88,6 +97,10 @@ struct ContentView: View {
         letters = targetWord.shuffled().map {
             Letter(text: String($0))
         }
+
+        totalProgress = Double(spellableWords.map(\.count).reduce(0, +))
+        currentProgress = 0
+        foundWords.removeAll()
     }
 
     func use(_ letter: Letter) {
@@ -110,6 +123,7 @@ struct ContentView: View {
 
         if spellableWords.contains(spelled) {
             foundWords.insert(spelled)
+            currentProgress += Double(spelled.count)
         }
 
         currentWord.removeAll()
