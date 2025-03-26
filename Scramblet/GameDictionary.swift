@@ -37,4 +37,23 @@ struct GameDictionary {
 
         return true
     }
+
+    func spellableWords(from target: String) -> [String] {
+        var result = [String]()
+
+        for word in words {
+            if canForm(word, from: target) {
+                result.append(word)
+            }
+        }
+        
+        result.sort { first, second in
+            if first.count == second.count {
+                first < second
+            } else {
+                first.count < second.count
+            }
+        }
+        return result
+    }
 }
