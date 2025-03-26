@@ -23,4 +23,18 @@ struct GameDictionary {
 
         words = Set(allWords.filter { $0.count <= 6 })
     }
+
+    func canForm(_ source: String, from target: String) -> Bool {
+        var target = target
+
+        for letter in source {
+            if let pos = target.firstIndex(of: letter) {
+                target.remove(at: pos)
+            } else {
+                return false
+            }
+        }
+
+        return true
+    }
 }
